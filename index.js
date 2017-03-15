@@ -6,6 +6,7 @@
  */
 
 // The Twitter SDK, with a config object in the twitter.json file
+// Get your credentials at https://apps.twitter.com/app/new
 // twitter.json file format:
 /**
  * {
@@ -58,7 +59,7 @@ const Twitter = new require('twitter')(require("./twitter")),
   },
 
 // streamhandler processes response info
-  streamHandler = (stream, item) => {
+  streamHandler = (stream) => {
     // Subscribe to the tweet event
     stream.on('data', tweet => {
       // This is an example action, logging data to the console about the tweet
@@ -76,18 +77,19 @@ const Twitter = new require('twitter')(require("./twitter")),
 /**
  * EXAMPLE USAGE:
  */
+
+// Filters are available as streaming search result or as pages of historic results
+var filter = {track: "indiegame, indiedev, web marketing"};
+
+// call for the streamHandler
+LimitedTwitter.stream('statuses/filter', filter, stream => {
+  streamHandler(stream);
+});
+
 // Get a list of the list entities for this user
 LimitedTwitter.get('lists/ownerships', {}, lists => {
   console.log("user's lists: ", lists);
   if (lists) {
     userLists = lists.lists;
   }
-});
-
-// Filters are available as streaming search result or as pages of historic results
-var filter = {"web marketing"};
-
-// call for the streamHandler
-LimitedTwitter.stream('statuses/filter', filter, stream => {
-  streamHandler(stream, item);
 });
