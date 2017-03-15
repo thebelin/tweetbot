@@ -1,0 +1,28 @@
+{
+  "name": "tweetbot",
+  "version": "1.0.0",
+  "description": "A demonstration twitter connection and rate limiter",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/thebelin/tweetbot.git"
+  },
+  "keywords": [
+    "Twitter",
+    "Social",
+    "Networking",
+    "Demonstration",
+    "Example",
+    "Rate",
+    "Limiter"
+  ],
+  "author": "Belin Fieldson @thebelin",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/thebelin/tweetbot/issues"
+  },
+  "homepage": "https://github.com/thebelin/tweetbot#readme"
+}
