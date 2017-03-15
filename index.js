@@ -4,7 +4,7 @@
  * @author    Belin Fieldson @thebelin
  * @copyright 2017 (MIT)
  */
-
+"use strict";
 // The Twitter SDK, with a config object in the twitter.json file
 // Get your credentials at https://apps.twitter.com/app/new
 // twitter.json file format:
@@ -59,11 +59,11 @@ const Twitter = new require('twitter')(require("./twitter")),
   },
 
 // streamhandler processes response info
-  streamHandler = (stream) => {
+  streamHandler = (stream, debugNote) => {
     // Subscribe to the tweet event
     stream.on('data', tweet => {
       // This is an example action, logging data to the console about the tweet
-      console.log("\r\n##### incoming tweet: %s", tweet.text);
+      console.log("\r\n" + debugNote + "# incoming tweet: %s", tweet.text);
     });
 
     // ... when we get an error...
@@ -78,18 +78,41 @@ const Twitter = new require('twitter')(require("./twitter")),
  * EXAMPLE USAGE:
  */
 
-// Filters are available as streaming search result or as pages of historic results
-var filter = {track: "indiegame, indiedev, web marketing"};
+// Stream Information about an area using a bounding box
+// Examples from data obtained at https://www.mapdevelopers.com/geocode_bounding_box.php
+// -105.096378,40.460904,-104.944250,40.609988  Fort Collins
+// North Latitude: 40.609988 South Latitude: 40.460904 East Longitude: -104.944250 West Longitude: -105.096378
 
+// -122.75,36.8,-121.75,37.8                    San Francisco
+
+// Fort Collins local data about web marketing
+var filter = {
+  track: "web marketing, social marketing, marketing",
+  locations: "-105.096378,40.460904,-104.944250,40.609988"
+};
 // call for the streamHandler
 LimitedTwitter.stream('statuses/filter', filter, stream => {
-  streamHandler(stream);
+  streamHandler(stream, 'FORT COLLINS:');
+});
+
+// San Francisco Web Marketing
+filter = {
+  track: "web marketing",
+  locations: "-122.75,36.8,-121.75,37.8"
+};
+// call for the streamHandler
+LimitedTwitter.stream('statuses/filter', filter, stream => {
+  streamHandler(stream, 'SAN FRAN:');
+});
+
+// Filters are available as streaming search result or as pages of historic results
+filter = {track: "social marketing"};
+// call for the streamHandler
+LimitedTwitter.stream('statuses/filter', filter, stream => {
+  streamHandler(stream, 'SOCIAL MARKETING:');
 });
 
 // Get a list of the list entities for this user
 LimitedTwitter.get('lists/ownerships', {}, lists => {
   console.log("user's lists: ", lists);
-  if (lists) {
-    userLists = lists.lists;
-  }
 });
