@@ -8,15 +8,16 @@
 // The Twitter SDK, with a config object in the twitter.json file
 // Get your credentials at https://apps.twitter.com/app/new
 // twitter.json file format:
-/**
- * {
- *   consumer_key: '',
- *   consumer_secret: '',
- *   access_token_key: '',
- *   access_token_secret: ''
- * }
- * @type {require}
- */
+/*
+
+{
+  "consumer_key": "",
+  "consumer_secret": "",
+  "access_token_key": "",
+  "access_token_secret": ""
+}
+
+*/
 const Twitter = new require('twitter')(require("./twitter")),
 
 // This keeps us from going over the rate limit established by Twitter
@@ -63,7 +64,9 @@ const Twitter = new require('twitter')(require("./twitter")),
     // Subscribe to the tweet event
     stream.on('data', tweet => {
       // This is an example action, logging data to the console about the tweet
-      console.log("\r\n" + debugNote + "# incoming tweet: %s", tweet.text);
+      tweetShow(debugNote, tweet);
+
+      // If you wanted to do other actions on each incoming tweet, they would be called here
     });
 
     // ... when we get an error...
@@ -71,48 +74,61 @@ const Twitter = new require('twitter')(require("./twitter")),
       //print out the error
       console.log(error);
     });
+  },
+
+// Show a tweet's information
+// This only debugs the data to the local screen,
+// as opposed to taking action on the tweet
+  tweetShow = (debugNote, tweet) => {
+    if (tweet.in_reply_to_screen_name)
+      console.log(
+        "\r\n%s#%s reply to @%s - from @%s at %s:\r\n%s",
+        debugNote,
+        tweet.place ? tweet.place.full_name : '',
+        tweet.in_reply_to_screen_name,
+        tweet.user.screen_name,
+        tweet.created_at,
+        tweet.text);
+    else if (tweet.in_reply_to_status_id_str)
+      console.log(
+        "\r\n%s#%s reply to status: %s - from @%s at %s:\r\n%s",
+        debugNote,
+        tweet.place ? tweet.place.full_name : '',
+        tweet.in_reply_to_status_id_str,
+        tweet.user.screen_name,
+        tweet.created_at,
+        tweet.text);
+    else if (tweet.in_reply_to_user_id_str)
+      console.log(
+        "\r\n%s#%s reply to user: %s - from @%s at %s:\r\n%s",
+        debugNote,
+        tweet.place ? tweet.place.full_name : '',
+        tweet.in_reply_to_user_id_str,
+        tweet.user.screen_name,
+        tweet.created_at,
+        tweet.text);
+    else
+      console.log(
+        "\r\n%s#%s tweet - from @%s at %s:\r\n%s",
+        debugNote,
+        tweet.place ? tweet.place.full_name : '',
+        tweet.user.screen_name,
+        tweet.created_at,
+        tweet.text);
+  },
+
+  // Data about LaunchNOCO
+  filter = {
+    // These are the search parameters for the data fed to the bot
+    track: "Northern Colorado, Colorado Business, Colorado Marketing, Fort Collins, NOCO, launchNOCO, LAUNCHNO.CO",
+    filter_level: "low"
   };
 // End const declaration
 
 /**
  * EXAMPLE USAGE:
  */
-
-// Stream Information about an area using a bounding box
-// Examples from data obtained at https://www.mapdevelopers.com/geocode_bounding_box.php
-// -105.096378,40.460904,-104.944250,40.609988  Fort Collins
-// North Latitude: 40.609988 South Latitude: 40.460904 East Longitude: -104.944250 West Longitude: -105.096378
-
-// -122.75,36.8,-121.75,37.8                    San Francisco
-
-// Fort Collins local data about web marketing
-var filter = {
-  track: "web marketing, social marketing, marketing",
-  locations: "-105.096378,40.460904,-104.944250,40.609988"
-};
 // call for the streamHandler
 LimitedTwitter.stream('statuses/filter', filter, stream => {
-  streamHandler(stream, 'FORT COLLINS:');
-});
-
-// San Francisco Web Marketing
-filter = {
-  track: "web marketing",
-  locations: "-122.75,36.8,-121.75,37.8"
-};
-// call for the streamHandler
-LimitedTwitter.stream('statuses/filter', filter, stream => {
-  streamHandler(stream, 'SAN FRAN:');
-});
-
-// Filters are available as streaming search result or as pages of historic results
-filter = {track: "social marketing"};
-// call for the streamHandler
-LimitedTwitter.stream('statuses/filter', filter, stream => {
-  streamHandler(stream, 'SOCIAL MARKETING:');
-});
-
-// Get a list of the list entities for this user
-LimitedTwitter.get('lists/ownerships', {}, lists => {
-  console.log("user's lists: ", lists);
+  streamHandler(stream, '');
 });
